@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 import java.time.LocalDate;
 import java.util.UUID;
-// važno mi je shvatiti ovo kako se povezuju ove tablice
+
 @Data
 @Entity
 @Table(name = "academic_year")
