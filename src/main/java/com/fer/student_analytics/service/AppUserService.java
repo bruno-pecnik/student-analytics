@@ -3,14 +3,20 @@ package com.fer.student_analytics.service;
 import com.fer.student_analytics.exception.ResourceNotFoundException;
 import com.fer.student_analytics.model.SystemUser;
 import com.fer.student_analytics.repository.AppUserRepository;
+
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder; // ************* dodao zbog autentifikacije
+
 @Service
 public class AppUserService {
+
+    private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder(); // ************* dodao zbog autentifikacije
 
     private final AppUserRepository userRepository; // referenca na bazu
 
@@ -31,6 +37,7 @@ public class AppUserService {
     }
 
     public SystemUser createUser(SystemUser user) { // prvo normaliziram, pa validiram, pa spremam
+        user.setPasswordHash(passwordEncoder.encode(user.getPasswordHash())); // ************* dodao zbog autentifikacije
         user.setFirstName(normalizeAndValidateName(user.getFirstName(), "Ime"));
         user.setLastName(normalizeAndValidateName(user.getLastName(), "Prezime"));
 
