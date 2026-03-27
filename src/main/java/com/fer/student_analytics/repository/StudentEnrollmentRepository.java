@@ -10,4 +10,5 @@ import java.util.UUID;
 public interface StudentEnrollmentRepository extends JpaRepository<StudentEnrollment, UUID> {
     List<StudentEnrollment> findByStudentId(UUID studentId);
     List<StudentEnrollment> findByGroupId(UUID groupId);
+    boolean existsByStudentIdAndGroupId(UUID studentId, UUID groupId); // provjera duplikata, isti student ne može biti upisan u istu grupu više puta
 }

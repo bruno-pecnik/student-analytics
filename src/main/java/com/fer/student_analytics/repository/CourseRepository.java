@@ -9,4 +9,6 @@ import java.util.UUID;
 @Repository
 public interface CourseRepository extends JpaRepository<Course, UUID> {
     List<Course> findByAcademicYearId(UUID academicYearId);
+    boolean existsByCodeAndAcademicYearId(String code, UUID academicYearId); // provjera duplikata po code-u unutar iste akademske godine
+    boolean existsByNameAndAcademicYearId(String name, UUID academicYearId); // provjera duplikata po nazivu unutar iste akademske godine
 }

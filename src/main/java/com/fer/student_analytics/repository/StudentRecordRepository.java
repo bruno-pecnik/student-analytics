@@ -10,4 +10,5 @@ import java.util.UUID;
 public interface StudentRecordRepository extends JpaRepository<StudentRecord, UUID> {
     List<StudentRecord> findByEnrollmentId(UUID enrollmentId);
     List<StudentRecord> findByComponentId(UUID componentId);
+    boolean existsByEnrollmentIdAndComponentId(UUID enrollmentId, UUID componentId); // provjera duplikata - isti student ne može imati više zapisa za istu komponentu
 }

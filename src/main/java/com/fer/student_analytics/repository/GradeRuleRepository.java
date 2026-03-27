@@ -9,4 +9,5 @@ import java.util.UUID;
 @Repository
 public interface GradeRuleRepository extends JpaRepository<GradeRule, UUID> {
     List<GradeRule> findByCourseId(UUID courseId);
+    boolean existsByGradeAndCourseId(Integer grade, UUID courseId); // provjera duplikata iste ocjene unutar istog kolegija
 }

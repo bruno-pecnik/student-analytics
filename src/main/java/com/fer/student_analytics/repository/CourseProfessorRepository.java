@@ -10,4 +10,5 @@ import java.util.UUID;
 public interface CourseProfessorRepository extends JpaRepository<CourseProfessor, UUID> {
     List<CourseProfessor> findByCourseId(UUID courseId);
     List<CourseProfessor> findByProfessorId(UUID professorId);
+    boolean existsByCourseIdAndProfessorId(UUID courseId, UUID professorId); // Spring generira SQL iz imena,  provjera duplikata
 }
