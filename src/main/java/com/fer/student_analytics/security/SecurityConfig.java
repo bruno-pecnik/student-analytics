@@ -8,6 +8,8 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.*;
+import java.util.List;
 
 @Configuration // govori springu da je ovo konfiguracijska klasa
 @EnableWebSecurity // uključuje Spring Security za CIJELUI aplikaciju
@@ -27,6 +29,8 @@ public class SecurityConfig {
             // CSRF štiti od napada gdje zlonamjerna stranica šalje zahtjeve u ime korisnika
             // ali JWT tokeni su sigurniji mehanizam pa CSRF nije potreban
             .csrf(csrf -> csrf.disable())
+
+            .cors(cors -> {}) // omogućujemo CORS da mi safari ne blokira komunikaciju
 
             // STATELESS, ne pamtimo session na serveru
             // svaki zahtjev mora nositi JWT token jer server ne pamti tko je ulogiran
@@ -60,6 +64,8 @@ public class SecurityConfig {
 
                 // svi ostali requestovi moraju biti autentificirani (ulogirani)
                 .anyRequest().authenticated()
+
+                
             )
 
             // dodaj moj JWT filter PRIJE Spring Security defaultnog filtera
@@ -67,5 +73,19 @@ public class SecurityConfig {
             .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();  // gotov sam sa konfiguracijom, izgradi security chain
+    }
+
+    @Bean // CORS konfiguracija
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration config = new CorsConfiguration();
+
+        config.setAllowedOrigins(List.of("http://localhost:3000"));
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        config.setAllowedHeaders(List.of("*"));
+        config.setAllowCredentials(true);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", config);
+        return source;
     }
 }
