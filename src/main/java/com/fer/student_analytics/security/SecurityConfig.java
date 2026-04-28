@@ -61,6 +61,9 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.PUT, "/api/grade-components/**").hasAnyRole("PROFESSOR", "ADMIN")
                 .requestMatchers(HttpMethod.DELETE, "/api/grade-components/**").hasAnyRole("PROFESSOR", "ADMIN")
 
+
+                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // dopusti preflight zahtjeve
+                
                 // svi ostali requestovi moraju biti autentificirani (ulogirani)
                 .anyRequest().authenticated()
 
