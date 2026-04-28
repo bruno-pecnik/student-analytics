@@ -30,8 +30,7 @@ public class SecurityConfig {
             // ali JWT tokeni su sigurniji mehanizam pa CSRF nije potreban
             .csrf(csrf -> csrf.disable())
 
-            .cors(cors -> {}) // omogućujemo CORS da mi safari ne blokira komunikaciju
-
+            .cors(cors -> cors.configurationSource(corsConfigurationSource())) // koristi moju CORS konfiguraciju
             // STATELESS, ne pamtimo session na serveru
             // svaki zahtjev mora nositi JWT token jer server ne pamti tko je ulogiran
             // to je osnova JWT autentikacije
