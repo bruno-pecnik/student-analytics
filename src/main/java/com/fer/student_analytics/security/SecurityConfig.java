@@ -38,37 +38,35 @@ public class SecurityConfig {
                 session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
             // pravila pristupa, tko smije što
-            .authorizeHttpRequests(auth -> auth 
+            .authorizeHttpRequests(auth -> auth
 
-                // javni endpointi, ne trebaju token, dostupni svima bez tokena (npr. login)
-                .requestMatchers("/api/auth/**").permitAll() // login je javan, svi mogu
+            // OPTIONS preflight zahtjevi moraju biti prvi!
+            .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 
-                // admin endpointi, samo admin može upravljati korisnicima
-                .requestMatchers("/api/users/**").hasRole("ADMIN")
+            // javni endpointi, ne trebaju token
+            .requestMatchers("/api/auth/**").permitAll()
 
-                // profesor i admin mogu unositi i mijenjati rezultate
-                .requestMatchers(HttpMethod.POST, "/api/records/**").hasAnyRole("PROFESSOR", "ADMIN")
-                .requestMatchers(HttpMethod.PUT, "/api/records/**").hasAnyRole("PROFESSOR", "ADMIN")
-                .requestMatchers(HttpMethod.DELETE, "/api/records/**").hasAnyRole("PROFESSOR", "ADMIN")
+            // admin endpointi, samo admin može upravljati korisnicima
+            .requestMatchers("/api/users/**").hasRole("ADMIN")
 
-                // profesor i admin mogu kreirati i mijenjati kolegije
-                .requestMatchers(HttpMethod.POST, "/api/courses/**").hasAnyRole("PROFESSOR", "ADMIN")
-                .requestMatchers(HttpMethod.PUT, "/api/courses/**").hasAnyRole("PROFESSOR", "ADMIN")
-                .requestMatchers(HttpMethod.DELETE, "/api/courses/**").hasAnyRole("PROFESSOR", "ADMIN")
+            // profesor i admin mogu unositi i mijenjati rezultate
+            .requestMatchers(HttpMethod.POST, "/api/records/**").hasAnyRole("PROFESSOR", "ADMIN")
+            .requestMatchers(HttpMethod.PUT, "/api/records/**").hasAnyRole("PROFESSOR", "ADMIN")
+            .requestMatchers(HttpMethod.DELETE, "/api/records/**").hasAnyRole("PROFESSOR", "ADMIN")
 
-                // profesor i admin mogu kreirati i mijenjati komponente ocjenjivanja
-                .requestMatchers(HttpMethod.POST, "/api/grade-components/**").hasAnyRole("PROFESSOR", "ADMIN")
-                .requestMatchers(HttpMethod.PUT, "/api/grade-components/**").hasAnyRole("PROFESSOR", "ADMIN")
-                .requestMatchers(HttpMethod.DELETE, "/api/grade-components/**").hasAnyRole("PROFESSOR", "ADMIN")
+            // profesor i admin mogu kreirati i mijenjati kolegije
+            .requestMatchers(HttpMethod.POST, "/api/courses/**").hasAnyRole("PROFESSOR", "ADMIN")
+            .requestMatchers(HttpMethod.PUT, "/api/courses/**").hasAnyRole("PROFESSOR", "ADMIN")
+            .requestMatchers(HttpMethod.DELETE, "/api/courses/**").hasAnyRole("PROFESSOR", "ADMIN")
 
+            // profesor i admin mogu kreirati i mijenjati komponente ocjenjivanja
+            .requestMatchers(HttpMethod.POST, "/api/grade-components/**").hasAnyRole("PROFESSOR", "ADMIN")
+            .requestMatchers(HttpMethod.PUT, "/api/grade-components/**").hasAnyRole("PROFESSOR", "ADMIN")
+            .requestMatchers(HttpMethod.DELETE, "/api/grade-components/**").hasAnyRole("PROFESSOR", "ADMIN")
 
-                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // dopusti preflight zahtjeve
-
-                // svi ostali requestovi moraju biti autentificirani (ulogirani)
-                .anyRequest().authenticated()
-
-                
-            )
+            // svi ostali requestovi moraju biti autentificirani
+            .anyRequest().authenticated()
+        )
 
             // dodaj moj JWT filter PRIJE Spring Security defaultnog filtera
             // tako Spring Security koristi moj token umjesto defaultne forme za prijavu
