@@ -63,7 +63,7 @@ public class SecurityConfig {
 
 
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // dopusti preflight zahtjeve
-                
+
                 // svi ostali requestovi moraju biti autentificirani (ulogirani)
                 .anyRequest().authenticated()
 
@@ -77,18 +77,13 @@ public class SecurityConfig {
         return http.build();  // gotov sam sa konfiguracijom, izgradi security chain
     }
 
-    @Bean // CORS konfiguracija
+    @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-
-        config.setAllowedOrigins(List.of(
-            "http://localhost:3000",
-            "https://student-analytics-frontend-k365cezqh-bruno-pecniks-projects.vercel.app"
-        ));        
+        config.setAllowedOriginPatterns(List.of("*")); // dopusti sve origine
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
-        config.setAllowCredentials(true);
-
+        config.setAllowCredentials(false); // promijeni na false
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
         return source;
