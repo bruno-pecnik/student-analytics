@@ -1,8 +1,10 @@
 package com.fer.student_analytics.service;
 
 import com.fer.student_analytics.model.StudentRecord;
+import com.fer.student_analytics.model.CourseGroup;
 import com.fer.student_analytics.model.StudentEnrollment;
 import com.fer.student_analytics.repository.StudentRecordRepository;
+import com.fer.student_analytics.repository.CourseGroupRepository;
 import com.fer.student_analytics.repository.StudentEnrollmentRepository;
 import org.springframework.stereotype.Service;
 import java.util.List;
@@ -13,12 +15,18 @@ public class StatisticsService { // OVU KLASU TREBAM NADOGRADITI
 
     private final StudentRecordRepository studentRecordRepository;
     private final StudentEnrollmentRepository enrollmentRepository;
+    private final CourseGroupRepository courseGroupRepository;
+
 
     public StatisticsService(
             StudentRecordRepository studentRecordRepository,
-            StudentEnrollmentRepository enrollmentRepository) {
+            StudentEnrollmentRepository enrollmentRepository,
+            CourseGroupRepository courseGroupRepository) {
         this.studentRecordRepository = studentRecordRepository;
         this.enrollmentRepository = enrollmentRepository;
+        this.courseGroupRepository = courseGroupRepository;
+
+
     }
 
     // ukupni bodovi studenta na kolegiju
@@ -90,5 +98,25 @@ public class StatisticsService { // OVU KLASU TREBAM NADOGRADITI
             }
         }
         return true; // sve obavezne komponente su ispunjene
+    }
+
+    // prosjek bodova za cijeli kolegij
+    public double getAveragePointsForCourse(UUID courseId) {
+        List<CourseGroup> grupe = courseGroupRepository.findByCourseId(courseId);
+        if (grupe.isEmpty()) return 0.0;
+        
+        double ukupno = 0.0;
+        int count = 0;
+        
+        for (CourseGroup grupa : grupe) {
+            List<StudentEnrollment> upisi = enrollmentRepository.findByGroupId(grupa.getId());
+            for (StudentEnrollment upis : upisi) {
+                ukupno += getTotalPointsForEnrollment(upis.getId());
+                count++;
+            }
+        }
+        
+        if (count == 0) return 0.0;
+        return ukupno / count;
     }
 }
