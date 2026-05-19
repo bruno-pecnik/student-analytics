@@ -38,8 +38,9 @@ public class AuthService {
         // generira JWT token za korisnika
         String token = jwtUtil.generateToken(user.getEmail(), user.getRole().name());
 
-        // objekt koji se šalje frontendu kao odgovor
+        // objekt koji se šalje frontendu kao odgovor, dodano user.getId() da frontend zna ID korisnika
         return new LoginResponseDto(
+            user.getId(), // dodano - ID korisnika potreban za dohvat upisa studenta
             token,
             user.getEmail(),
             user.getRole().name(),
