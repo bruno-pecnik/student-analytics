@@ -40,7 +40,7 @@ public class AuthService {
 
         // objekt koji se šalje frontendu kao odgovor, dodano user.getId() da frontend zna ID korisnika
         return new LoginResponseDto(
-            user.getId(), // dodano - ID korisnika potreban za dohvat upisa studenta
+            user.getId(), // dodano ID korisnika potreban za dohvat upisa studenta
             token,
             user.getEmail(),
             user.getRole().name(),

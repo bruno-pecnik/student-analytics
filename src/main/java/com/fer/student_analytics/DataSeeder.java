@@ -7,12 +7,12 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
-@Component // spring upravlja ovom klasom automatski
+@Component
 public class DataSeeder implements CommandLineRunner {
-    // CommandLineRunner znači da spring pozove run() metodu automatski kad se aplikacija pokrene
 
-    // repositoryi za pristup bazi
     private final AppUserRepository userRepository;
     private final AcademicYearRepository academicYearRepository;
     private final CourseRepository courseRepository;
@@ -20,16 +20,18 @@ public class DataSeeder implements CommandLineRunner {
     private final StudentEnrollmentRepository enrollmentRepository;
     private final GradeComponentRepository gradeComponentRepository;
     private final StudentRecordRepository studentRecordRepository;
-    private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder(); // objekt koji šifrira lozinke, hashirat ćemo ih
+    private final GradeRuleRepository gradeRuleRepository;
+    private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
-    public DataSeeder( // konstruktor
+    public DataSeeder(
             AppUserRepository userRepository,
             AcademicYearRepository academicYearRepository,
             CourseRepository courseRepository,
             CourseGroupRepository courseGroupRepository,
             StudentEnrollmentRepository enrollmentRepository,
             GradeComponentRepository gradeComponentRepository,
-            StudentRecordRepository studentRecordRepository) {
+            StudentRecordRepository studentRecordRepository,
+            GradeRuleRepository gradeRuleRepository) {
         this.userRepository = userRepository;
         this.academicYearRepository = academicYearRepository;
         this.courseRepository = courseRepository;
@@ -37,35 +39,17 @@ public class DataSeeder implements CommandLineRunner {
         this.enrollmentRepository = enrollmentRepository;
         this.gradeComponentRepository = gradeComponentRepository;
         this.studentRecordRepository = studentRecordRepository;
+        this.gradeRuleRepository = gradeRuleRepository;
     }
 
     @Override
     public void run(String... args) {
-        // ako već ima podataka, ne radi ništa
         if (academicYearRepository.count() > 0) {
             System.out.println("Baza već ima podatke, preskačem seed.");
             return;
         }
 
-        System.out.println("Postavljam bazu s demo podacima ...");
-
-        // kreiranje akademske godine
-        AcademicYear godina = new AcademicYear();
-        godina.setName("2025./2026.");
-        godina.setStartDate(LocalDate.of(2025, 10, 1));
-        godina.setEndDate(LocalDate.of(2026, 9, 30));
-        academicYearRepository.save(godina);
-
-        // kreiranje profesora
-        SystemUser profesor = new SystemUser();
-        profesor.setFirstName("Marko");
-        profesor.setLastName("Markota");
-        profesor.setEmail("marko@fer.hr");
-        profesor.setPasswordHash(passwordEncoder.encode("profesor123"));
-        profesor.setRole(SystemUser.Role.PROFESSOR);
-        profesor.setAvatarUrl("");
-        profesor.setCreatedAt(LocalDateTime.now());
-        userRepository.save(profesor);
+        System.out.println("Postavljam bazu s demo podacima...");
 
         // kreiranje admina
         SystemUser admin = new SystemUser();
@@ -78,105 +62,188 @@ public class DataSeeder implements CommandLineRunner {
         admin.setCreatedAt(LocalDateTime.now());
         userRepository.save(admin);
 
-        // kreiranje kolegija
-        Course kolegij = new Course();
-        kolegij.setName("Algoritmi i strukture podataka");
-        kolegij.setCode("ASP");
-        kolegij.setDescription("Osnove algoritama i struktura podataka");
-        kolegij.setSemester(Course.Semester.WINTER);
-        kolegij.setAcademicYear(godina);
-        courseRepository.save(kolegij);
+        // kreiranje profesora
+        SystemUser profesor1 = new SystemUser();
+        profesor1.setFirstName("Marko");
+        profesor1.setLastName("Markota");
+        profesor1.setEmail("marko@fer.hr");
+        profesor1.setPasswordHash(passwordEncoder.encode("profesor123"));
+        profesor1.setRole(SystemUser.Role.PROFESSOR);
+        profesor1.setAvatarUrl("");
+        profesor1.setCreatedAt(LocalDateTime.now());
+        userRepository.save(profesor1);
 
-        Course kolegij2 = new Course();
-        kolegij2.setName("Baze podataka");
-        kolegij2.setCode("BP");
-        kolegij2.setDescription("Osnove baza podataka");
-        kolegij2.setSemester(Course.Semester.SUMMER);
-        kolegij2.setAcademicYear(godina);
-        courseRepository.save(kolegij2);
+        SystemUser profesor2 = new SystemUser();
+        profesor2.setFirstName("Iva");
+        profesor2.setLastName("Ivić");
+        profesor2.setEmail("iva@fer.hr");
+        profesor2.setPasswordHash(passwordEncoder.encode("profesor123"));
+        profesor2.setRole(SystemUser.Role.PROFESSOR);
+        profesor2.setAvatarUrl("");
+        profesor2.setCreatedAt(LocalDateTime.now());
+        userRepository.save(profesor2);
 
-        // kreiranje grupa
-        CourseGroup grupaA = new CourseGroup();
-        grupaA.setName("Grupa A");
-        grupaA.setCourse(kolegij);
-        courseGroupRepository.save(grupaA);
+        // 30 studenata
+        String[] imena = {
+            "Ana", "Ivan", "Maja", "Luka", "Sara", "Petar", "Nina", "Tomislav", "Petra", "Matej",
+            "Ema", "Josip", "Lucija", "Ante", "Mia", "Karlo", "Tea", "Domagoj", "Klara", "Bruno",
+            "Lea", "Nikola", "Iva", "Marko", "Zara", "Filip", "Dora", "Leon", "Marta", "Roko"
+        };
+        String[] prezimena = {
+            "Kovač", "Horvat", "Babić", "Marić", "Novak", "Jurić", "Perić", "Blažević", "Knežević", "Vuković",
+            "Šimić", "Grabovac", "Pavić", "Žanić", "Vidović", "Tomić", "Lončar", "Grgić", "Bošnjak", "Pečnik",
+            "Radić", "Mlinarić", "Čović", "Stipić", "Kelemen", "Vukić", "Mazur", "Barić", "Smoljan", "Ćurić"
+        };
 
-        CourseGroup grupaB = new CourseGroup();
-        grupaB.setName("Grupa B");
-        grupaB.setCourse(kolegij);
-        courseGroupRepository.save(grupaB);
-
-        // kreiranje komponenti ocjenjivanja
-        GradeComponent kolokvij = new GradeComponent();
-        kolokvij.setName("Kolokvij 1");
-        kolokvij.setMaxPoints(30.0f);
-        kolokvij.setPassingThreshold(15.0f);
-        kolokvij.setWeightPercent(30.0f);
-        kolokvij.setIsRequired(true);
-        kolokvij.setCourse(kolegij);
-        gradeComponentRepository.save(kolokvij);
-
-        GradeComponent ispit = new GradeComponent();
-        ispit.setName("Završni ispit");
-        ispit.setMaxPoints(50.0f);
-        ispit.setPassingThreshold(25.0f);
-        ispit.setWeightPercent(50.0f);
-        ispit.setIsRequired(true);
-        ispit.setCourse(kolegij);
-        gradeComponentRepository.save(ispit);
-
-        GradeComponent zadace = new GradeComponent();
-        zadace.setName("Zadaće");
-        zadace.setMaxPoints(20.0f);
-        zadace.setPassingThreshold(10.0f);
-        zadace.setWeightPercent(20.0f);
-        zadace.setIsRequired(false);
-        zadace.setCourse(kolegij);
-        gradeComponentRepository.save(zadace);
-
-        // kreiranje 10 studenata i upis u grupu A
-        String[] imena = {"Ana", "Ivan", "Maja", "Luka", "Sara", "Petar", "Nina", "Tomislav", "Petra", "Matej"};
-        String[] prezimena = {"Kovač", "Horvat", "Babić", "Marić", "Novak", "Jurić", "Perić", "Blažević", "Knežević", "Vuković"};
-
-        for (int i = 0; i < 10; i++) {
-            // kreiraj studenta
+        List<SystemUser> studenti = new ArrayList<>();
+        for (int i = 0; i < 30; i++) {
             SystemUser student = new SystemUser();
             student.setFirstName(imena[i]);
             student.setLastName(prezimena[i]);
-            student.setEmail(imena[i].toLowerCase() + "@fer.hr");
+            student.setEmail(imena[i].toLowerCase() + "." + prezimena[i].toLowerCase() + "@fer.hr");
             student.setPasswordHash(passwordEncoder.encode("student123"));
             student.setRole(SystemUser.Role.STUDENT);
             student.setAvatarUrl("");
             student.setCreatedAt(LocalDateTime.now());
             userRepository.save(student);
+            studenti.add(student);
+        }
 
-            // upiši studenta u grupu A
-            StudentEnrollment upis = new StudentEnrollment();
-            upis.setStudent(student);
-            upis.setGroup(grupaA);
-            enrollmentRepository.save(upis);
+        // 10 kolegija s kodovima i semestrima
+        String[] naziviKolegija = {
+            "Matematička analiza 1",
+            "Uvod u programiranje",
+            "Linearna algebra",
+            "Vještine komuniciranja",
+            "Digitalna logika",
+            "Matematička analiza 2",
+            "Objektno orijentirano programiranje",
+            "Menadžment u inženjerstvu",
+            "Fizika 1",
+            "Osnove elektrotehnike"
+        };
+        String[] kodoviKolegija = {
+            "MA1", "UP", "LA", "VK", "DL", "MA2", "OOP", "MUI", "FIZ1", "OE"
+        };
+        Course.Semester[] semestri = {
+            Course.Semester.WINTER, Course.Semester.WINTER, Course.Semester.WINTER,
+            Course.Semester.WINTER, Course.Semester.WINTER,
+            Course.Semester.SUMMER, Course.Semester.SUMMER, Course.Semester.SUMMER,
+            Course.Semester.SUMMER, Course.Semester.SUMMER
+        };
 
-            // dodaj rezultate za kolokvij
-            float bodoviKolokvij = 10.0f + i * 2; // bodovi od 10 do 28
+        // bodovi rastu kroz godine za vidljiv trend
+        // svaka godina ima malo veći prosjek
+        float[] faktorPoGodini = {0.6f, 0.65f, 0.7f, 0.72f, 0.75f, 0.78f, 0.80f, 0.82f, 0.85f, 0.88f};
 
-            StudentRecord recordKolokvij = new StudentRecord();
-            recordKolokvij.setEnrollment(upis);
-            recordKolokvij.setComponent(kolokvij);
-            recordKolokvij.setObligationMet(bodoviKolokvij >= 15.0f);
-            recordKolokvij.setPoints(bodoviKolokvij);
-            recordKolokvij.setRecordedAt(LocalDate.now());
-            studentRecordRepository.save(recordKolokvij);
+        for (int g = 0; g < 10; g++) {
+            int godinaPocetak = 2015 + g;
+            String nazivGodine = godinaPocetak + "./" + (godinaPocetak + 1) + ".";
 
-            // dodaj rezultate za zadaće
-            StudentRecord recordZadace = new StudentRecord();
-            recordZadace.setEnrollment(upis);
-            recordZadace.setComponent(zadace);
-            recordZadace.setPoints(8.0f + i); // bodovi od 8 do 17
-            recordZadace.setObligationMet(i > 2); // prvih 3 nisu ispunili
-            recordZadace.setRecordedAt(LocalDate.now());
-            studentRecordRepository.save(recordZadace);
+            AcademicYear godina = new AcademicYear();
+            godina.setName(nazivGodine);
+            godina.setStartDate(LocalDate.of(godinaPocetak, 10, 1));
+            godina.setEndDate(LocalDate.of(godinaPocetak + 1, 9, 30));
+            academicYearRepository.save(godina);
+
+            for (int k = 0; k < 10; k++) {
+                // kreiraj kolegij
+                Course kolegij = new Course();
+                kolegij.setName(naziviKolegija[k]);
+                kolegij.setCode(kodoviKolegija[k]);
+                kolegij.setDescription(naziviKolegija[k]);
+                kolegij.setSemester(semestri[k]);
+                kolegij.setAcademicYear(godina);
+                courseRepository.save(kolegij);
+
+                // grade rules za kolegij
+                kreirajGradeRules(kolegij);
+
+                // komponente
+                GradeComponent kolokvij = kreirajKomponentu("Kolokvij 1", 30.0f, 15.0f, 30.0f, true, kolegij);
+                GradeComponent ispit = kreirajKomponentu("Završni ispit", 50.0f, 25.0f, 50.0f, true, kolegij);
+                GradeComponent zadace = kreirajKomponentu("Zadaće", 20.0f, 10.0f, 20.0f, false, kolegij);
+
+                // grupe
+                CourseGroup grupaA = kreirajGrupu("Grupa A", kolegij);
+                CourseGroup grupaB = kreirajGrupu("Grupa B", kolegij);
+
+                // studenti 0-14 u grupu A, 15-29 u grupu B
+                for (int i = 0; i < 30; i++) {
+                    SystemUser student = studenti.get(i);
+                    CourseGroup grupa = i < 15 ? grupaA : grupaB;
+
+                    StudentEnrollment upis = kreirajUpis(student, grupa);
+
+                    // bodovi rastu kroz godine
+                    float faktor = faktorPoGodini[g];
+                    float bazaBodova = 10.0f + (i % 15) * 1.2f; // različiti bodovi po studentu
+
+                    float bodoviKolokvij = Math.min(bazaBodova * faktor * 1.5f, 29.0f);
+                    float bodoviIspit = Math.min(bazaBodova * faktor * 2.5f, 49.0f);
+                    float bodoviZadace = Math.min(bazaBodova * faktor, 19.0f);
+
+                    kreirajRezultat(upis, kolokvij, bodoviKolokvij, LocalDate.of(godinaPocetak + 1, 1, 15));
+                    kreirajRezultat(upis, ispit, bodoviIspit, LocalDate.of(godinaPocetak + 1, 2, 1));
+                    kreirajRezultat(upis, zadace, bodoviZadace, LocalDate.of(godinaPocetak + 1, 1, 1));
+                }
+            }
         }
 
         System.out.println("Punjenje baze demo podacima je završeno!");
+    }
+
+    private GradeComponent kreirajKomponentu(String naziv, float max, float prag, float tezina, boolean obavezna, Course kolegij) {
+        GradeComponent k = new GradeComponent();
+        k.setName(naziv);
+        k.setMaxPoints(max);
+        k.setPassingThreshold(prag);
+        k.setWeightPercent(tezina);
+        k.setIsRequired(obavezna);
+        k.setCourse(kolegij);
+        return gradeComponentRepository.save(k);
+    }
+
+    private CourseGroup kreirajGrupu(String naziv, Course kolegij) {
+        CourseGroup g = new CourseGroup();
+        g.setName(naziv);
+        g.setCourse(kolegij);
+        return courseGroupRepository.save(g);
+    }
+
+    private StudentEnrollment kreirajUpis(SystemUser student, CourseGroup grupa) {
+        StudentEnrollment u = new StudentEnrollment();
+        u.setStudent(student);
+        u.setGroup(grupa);
+        return enrollmentRepository.save(u);
+    }
+
+    private void kreirajRezultat(StudentEnrollment upis, GradeComponent komponenta, float bodovi, LocalDate datum) {
+        float stvarniBodovi = Math.min(bodovi, komponenta.getMaxPoints() - 1);
+        StudentRecord r = new StudentRecord();
+        r.setEnrollment(upis);
+        r.setComponent(komponenta);
+        r.setPoints(stvarniBodovi);
+        r.setObligationMet(stvarniBodovi >= komponenta.getPassingThreshold());
+        r.setRecordedAt(datum);
+        studentRecordRepository.save(r);
+    }
+
+    private void kreirajGradeRules(Course kolegij) {
+        float[][] pravila = {
+            {0, 49, 1},
+            {50, 62, 2},
+            {63, 75, 3},
+            {76, 88, 4},
+            {89, 100, 5}
+        };
+        for (float[] p : pravila) {
+            GradeRule rule = new GradeRule();
+            rule.setCourse(kolegij);
+            rule.setMinPoints(p[0]);
+            rule.setMaxPoints(p[1]);
+            rule.setGrade(Math.round(p[2]));
+            gradeRuleRepository.save(rule);
+        }
     }
 }
