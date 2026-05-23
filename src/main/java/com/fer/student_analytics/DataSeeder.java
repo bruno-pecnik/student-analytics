@@ -51,7 +51,7 @@ public class DataSeeder implements CommandLineRunner {
 
         System.out.println("Postavljam bazu s demo podacima...");
 
-        // kreiranje admina
+        // admin
         SystemUser admin = new SystemUser();
         admin.setFirstName("Filip");
         admin.setLastName("Filipović");
@@ -62,7 +62,7 @@ public class DataSeeder implements CommandLineRunner {
         admin.setCreatedAt(LocalDateTime.now());
         userRepository.save(admin);
 
-        // kreiranje profesora
+        // profesor 1
         SystemUser profesor1 = new SystemUser();
         profesor1.setFirstName("Marko");
         profesor1.setLastName("Markota");
@@ -73,6 +73,7 @@ public class DataSeeder implements CommandLineRunner {
         profesor1.setCreatedAt(LocalDateTime.now());
         userRepository.save(profesor1);
 
+        // profesor 2
         SystemUser profesor2 = new SystemUser();
         profesor2.setFirstName("Iva");
         profesor2.setLastName("Ivić");
@@ -83,33 +84,17 @@ public class DataSeeder implements CommandLineRunner {
         profesor2.setCreatedAt(LocalDateTime.now());
         userRepository.save(profesor2);
 
-        // 30 studenata
         String[] imena = {
             "Ana", "Ivan", "Maja", "Luka", "Sara", "Petar", "Nina", "Tomislav", "Petra", "Matej",
             "Ema", "Josip", "Lucija", "Ante", "Mia", "Karlo", "Tea", "Domagoj", "Klara", "Bruno",
             "Lea", "Nikola", "Iva", "Marko", "Zara", "Filip", "Dora", "Leon", "Marta", "Roko"
         };
         String[] prezimena = {
-            "Kovač", "Horvat", "Babić", "Marić", "Novak", "Jurić", "Perić", "Blažević", "Knežević", "Vuković",
-            "Šimić", "Grabovac", "Pavić", "Žanić", "Vidović", "Tomić", "Lončar", "Grgić", "Bošnjak", "Pečnik",
-            "Radić", "Mlinarić", "Čović", "Stipić", "Kelemen", "Vukić", "Mazur", "Barić", "Smoljan", "Ćurić"
+            "Kovač", "Horvat", "Babić", "Marić", "Novak",
+            "Jurić", "Perić", "Blažević", "Knežević", "Vuković"
         };
 
-        List<SystemUser> studenti = new ArrayList<>();
-        for (int i = 0; i < 30; i++) {
-            SystemUser student = new SystemUser();
-            student.setFirstName(imena[i]);
-            student.setLastName(prezimena[i]);
-            student.setEmail(imena[i].toLowerCase() + "." + prezimena[i].toLowerCase() + "@fer.hr");
-            student.setPasswordHash(passwordEncoder.encode("student123"));
-            student.setRole(SystemUser.Role.STUDENT);
-            student.setAvatarUrl("");
-            student.setCreatedAt(LocalDateTime.now());
-            userRepository.save(student);
-            studenti.add(student);
-        }
-
-        // 10 kolegija s kodovima i semestrima
+        // kolegiji
         String[] naziviKolegija = {
             "Matematička analiza 1",
             "Uvod u programiranje",
@@ -133,21 +118,39 @@ public class DataSeeder implements CommandLineRunner {
         };
 
         // bodovi rastu kroz godine za vidljiv trend
-        // svaka godina ima malo veći prosjek
-        float[] faktorPoGodini = {0.6f, 0.65f, 0.7f, 0.72f, 0.75f, 0.78f, 0.80f, 0.82f, 0.85f, 0.88f};
+        float[] faktorPoGodini = {
+            0.60f, 0.63f, 0.66f, 0.69f, 0.72f,
+            0.75f, 0.78f, 0.81f, 0.84f, 0.88f
+        };
 
         for (int g = 0; g < 10; g++) {
             int godinaPocetak = 2015 + g;
             String nazivGodine = godinaPocetak + "./" + (godinaPocetak + 1) + ".";
 
+            // kreiraj akademsku godinu
             AcademicYear godina = new AcademicYear();
             godina.setName(nazivGodine);
             godina.setStartDate(LocalDate.of(godinaPocetak, 10, 1));
             godina.setEndDate(LocalDate.of(godinaPocetak + 1, 9, 30));
             academicYearRepository.save(godina);
 
+            // kreiraj 30 studenata za ovu godinu
+            List<SystemUser> studentiGodine = new ArrayList<>();
+            for (int i = 0; i < 30; i++) {
+                SystemUser student = new SystemUser();
+                student.setFirstName(imena[i]);
+                student.setLastName(prezimena[g]); // svaka godina ima drugačije prezime
+                student.setEmail(imena[i].toLowerCase() + "." + prezimena[g].toLowerCase() + "." + godinaPocetak + "@fer.hr");
+                student.setPasswordHash(passwordEncoder.encode("student123"));
+                student.setRole(SystemUser.Role.STUDENT);
+                student.setAvatarUrl("");
+                student.setCreatedAt(LocalDateTime.now());
+                userRepository.save(student);
+                studentiGodine.add(student);
+            }
+
+            // kreiraj kolegije za ovu godinu
             for (int k = 0; k < 10; k++) {
-                // kreiraj kolegij
                 Course kolegij = new Course();
                 kolegij.setName(naziviKolegija[k]);
                 kolegij.setCode(kodoviKolegija[k]);
@@ -156,7 +159,7 @@ public class DataSeeder implements CommandLineRunner {
                 kolegij.setAcademicYear(godina);
                 courseRepository.save(kolegij);
 
-                // grade rules za kolegij
+                // grade rules
                 kreirajGradeRules(kolegij);
 
                 // komponente
@@ -170,14 +173,13 @@ public class DataSeeder implements CommandLineRunner {
 
                 // studenti 0-14 u grupu A, 15-29 u grupu B
                 for (int i = 0; i < 30; i++) {
-                    SystemUser student = studenti.get(i);
+                    SystemUser student = studentiGodine.get(i);
                     CourseGroup grupa = i < 15 ? grupaA : grupaB;
 
                     StudentEnrollment upis = kreirajUpis(student, grupa);
 
-                    // bodovi rastu kroz godine
                     float faktor = faktorPoGodini[g];
-                    float bazaBodova = 10.0f + (i % 15) * 1.2f; // različiti bodovi po studentu
+                    float bazaBodova = 10.0f + (i % 15) * 1.2f;
 
                     float bodoviKolokvij = Math.min(bazaBodova * faktor * 1.5f, 29.0f);
                     float bodoviIspit = Math.min(bazaBodova * faktor * 2.5f, 49.0f);
