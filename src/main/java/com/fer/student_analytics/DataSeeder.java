@@ -178,15 +178,17 @@ public class DataSeeder implements CommandLineRunner {
 
                     StudentEnrollment upis = kreirajUpis(student, grupa);
 
-                    float faktor = faktorPoGodini[g];
-                    float bazaBodova = 10.0f + (i % 15) * 1.2f;
+                    java.util.Random rand = new java.util.Random(g * 1000L + k * 100L + i);
 
-                    float seed_val = (g * 100 + k * 10 + i) % 20;
-                    float varijacija = 0.75f + (seed_val * 0.015f);
-                    float bodoviKolokvij = Math.min(bazaBodova * faktor * varijacija * 1.5f, 29.0f);
-                    float bodoviIspit = Math.min(bazaBodova * faktor * (varijacija + 0.1f) * 2.5f, 49.0f);
-                    float bodoviZadace = Math.min(bazaBodova * faktor * (varijacija - 0.05f), 19.0f);
-                    
+                    int bodoviKolokvij = rand.nextInt(31); // 0-30
+                    int bodoviIspit = rand.nextInt(51);     // 0-50
+                    int bodoviZadace = rand.nextInt(21);    // 0-20
+
+                    if (rand.nextFloat() < 0.6f) {
+                        bodoviKolokvij = Math.min(bodoviKolokvij + rand.nextInt(10), 30);
+                        bodoviIspit = Math.min(bodoviIspit + rand.nextInt(15), 50);
+                        bodoviZadace = Math.min(bodoviZadace + rand.nextInt(8), 20);
+                    }
 
                     kreirajRezultat(upis, kolokvij, bodoviKolokvij, LocalDate.of(godinaPocetak + 1, 1, 15));
                     kreirajRezultat(upis, ispit, bodoviIspit, LocalDate.of(godinaPocetak + 1, 2, 1));
@@ -223,7 +225,7 @@ public class DataSeeder implements CommandLineRunner {
         return enrollmentRepository.save(u);
     }
 
-    private void kreirajRezultat(StudentEnrollment upis, GradeComponent komponenta, float bodovi, LocalDate datum) {
+    private void kreirajRezultat(StudentEnrollment upis, GradeComponent komponenta, int bodovi, LocalDate datum) {
         float stvarniBodovi = Math.min(bodovi, komponenta.getMaxPoints() - 1);
         StudentRecord r = new StudentRecord();
         r.setEnrollment(upis);
