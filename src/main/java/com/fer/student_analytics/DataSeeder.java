@@ -181,11 +181,12 @@ public class DataSeeder implements CommandLineRunner {
                     float faktor = faktorPoGodini[g];
                     float bazaBodova = 10.0f + (i % 15) * 1.2f;
 
-                    // koristimo indeks kolegija za generiranje
-                    float varijacija = 0.8f + (k * 0.04f) + (i * 0.01f);
+                    float seed_val = (g * 100 + k * 10 + i) % 20;
+                    float varijacija = 0.75f + (seed_val * 0.015f);
                     float bodoviKolokvij = Math.min(bazaBodova * faktor * varijacija * 1.5f, 29.0f);
-                    float bodoviIspit = Math.min(bazaBodova * faktor * varijacija * 2.5f, 49.0f);
-                    float bodoviZadace = Math.min(bazaBodova * faktor * varijacija, 19.0f);
+                    float bodoviIspit = Math.min(bazaBodova * faktor * (varijacija + 0.1f) * 2.5f, 49.0f);
+                    float bodoviZadace = Math.min(bazaBodova * faktor * (varijacija - 0.05f), 19.0f);
+                    
 
                     kreirajRezultat(upis, kolokvij, bodoviKolokvij, LocalDate.of(godinaPocetak + 1, 1, 15));
                     kreirajRezultat(upis, ispit, bodoviIspit, LocalDate.of(godinaPocetak + 1, 2, 1));
