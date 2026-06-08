@@ -89,9 +89,14 @@ public class DataSeeder implements CommandLineRunner {
             "Ema", "Josip", "Lucija", "Ante", "Mia", "Karlo", "Tea", "Domagoj", "Klara", "Bruno",
             "Lea", "Nikola", "Iva", "Marko", "Zara", "Filip", "Dora", "Leon", "Marta", "Roko"
         };
+        
         String[] prezimena = {
-            "Kovač", "Horvat", "Babić", "Marić", "Novak",
-            "Jurić", "Perić", "Blažević", "Knežević", "Vuković"
+            "Kovač", "Horvat", "Pećnik", "Marić", "Novak",
+            "Jurić", "Perić", "Blažević", "Knežević", "Vuković",
+            "Pavić", "Matić", "Tomić", "Petrović", "Lovrić",
+            "Šimić", "Radić", "Brkić", "Vidović", "Grgić",
+            "Bošnjak", "Kralj", "Barić", "Lukić", "Vukelić",
+            "Đurić", "Mandić", "Klarić", "Pavlović", "Markota"
         };
 
         // kolegiji
@@ -139,8 +144,8 @@ public class DataSeeder implements CommandLineRunner {
             for (int i = 0; i < 30; i++) {
                 SystemUser student = new SystemUser();
                 student.setFirstName(imena[i]);
-                student.setLastName(prezimena[g]); // svaka godina ima drugačije prezime
-                student.setEmail(imena[i].toLowerCase() + "." + prezimena[g].toLowerCase() + "." + godinaPocetak + "@fer.hr");
+                student.setLastName(prezimena[(i + g) % 30]); 
+                student.setEmail(imena[i].toLowerCase() + "." + prezimena[(i + g) % 30].toLowerCase() + "." + godinaPocetak + "@fer.hr");
                 student.setPasswordHash(passwordEncoder.encode("student123"));
                 student.setRole(SystemUser.Role.STUDENT);
                 student.setAvatarUrl("");
