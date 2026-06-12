@@ -13,9 +13,9 @@ public class Course {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    // in java we have a whole object but hibernate only stores it's ID
-    @ManyToOne // multiple courses belong to one academic year
-    @JoinColumn(name = "academic_year_id", nullable = false) // JoinColumn tells me in Course table there is column called academic_year_id
+    // u javi imamo cijeli objekt ali hibernate sačuva samo njegov ID
+    @ManyToOne // više kolegija pripadaju jednoj akademskoj godini
+    @JoinColumn(name = "academic_year_id", nullable = false) // JoinColumn mi kaže u Course tablici da ima stupac academic_year_id
     private AcademicYear academicYear;
 
     @Column(nullable = false) // nullable=false vrijedi samo za prvu liniju ispod

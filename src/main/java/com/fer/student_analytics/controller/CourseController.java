@@ -27,7 +27,7 @@ public class CourseController {
     }
 
     // GET /api/courses/by-year/{academicYearId}, dohvati kolegije po akademskoj godini
-    @GetMapping("/by-year/{academicYearId}") // custom endpoint, API dizajn, daj kolegije za određenu godinu
+    @GetMapping("/by-year/{academicYearId}") // custom endpoint, daj kolegije za određenu godinu
     public ResponseEntity<List<Course>> getCoursesByAcademicYear(@PathVariable UUID academicYearId) {
         return ResponseEntity.ok(courseService.getCoursesByAcademicYear(academicYearId)); // 200 OK
     }
@@ -49,14 +49,14 @@ public class CourseController {
         return ResponseEntity.status(HttpStatus.CREATED).body(created); // 201 Created
     }
 
-    // PUT /api/courses/{id} - azuriraj kolegij
+    // PUT /api/courses/{id}, azuriraj kolegij
     @PutMapping("/{id}")
     public ResponseEntity<Course> updateCourse(@PathVariable UUID id, @RequestBody Course course) {
         Course updated = courseService.updateCourse(id, course);
         return ResponseEntity.ok(updated); // 200 OK
     }
 
-    // DELETE /api/courses/{id} - obrisi kolegij
+    // DELETE /api/courses/{id}, obrisi kolegij
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteCourse(@PathVariable UUID id) {
         courseService.deleteCourse(id);

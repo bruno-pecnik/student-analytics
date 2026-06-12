@@ -17,36 +17,30 @@ public class SecurityConfig {
 
     private final JwtAuthFilter jwtAuthFilter; // referenca na moj filter koji čita JWT token iz requesta
 
-    public SecurityConfig(JwtAuthFilter jwtAuthFilter) { // konstruktor
+    public SecurityConfig(JwtAuthFilter jwtAuthFilter) { 
         this.jwtAuthFilter = jwtAuthFilter;
     }
 
     @Bean // govori Springu da ovu metodu treba pozvati i rezultat registrirati kao bean, ovo mi je bitnooO!!
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception { // SecurityFilterChain je lanac security pravila koji će se primjenjivati na requestove
-        http // počinjemo graditi security pravila
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception { 
+        http 
 
             // isključujemo CSRF zaštitu jer koristimo JWT tokene, ne session kolačiće
-            // CSRF štiti od napada gdje zlonamjerna stranica šalje zahtjeve u ime korisnika
-            // ali JWT tokeni su sigurniji mehanizam pa CSRF nije potreban
             .csrf(csrf -> csrf.disable())
 
             .cors(cors -> cors.configurationSource(corsConfigurationSource())) // koristi moju CORS konfiguraciju
-            // STATELESS, ne pamtimo session na serveru
-            // svaki zahtjev mora nositi JWT token jer server ne pamti tko je ulogiran
-            // to je osnova JWT autentikacije
             .sessionManagement(session ->
                 session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
-            // pravila pristupa, tko smije što
             .authorizeHttpRequests(auth -> auth
 
-            // OPTIONS preflight zahtjevi moraju biti prvi!
+            // OPTIONS preflight zahtjevi 
             .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 
             // javni endpointi, ne trebaju token
             .requestMatchers("/api/auth/**").permitAll()
 
-            // admin endpointi, samo admin može upravljati korisnicima
+            // samo admin može upravljati korisnicima
             .requestMatchers("/api/users/**").hasRole("ADMIN")
 
             // profesor i admin mogu unositi i mijenjati rezultate
@@ -68,11 +62,9 @@ public class SecurityConfig {
             .anyRequest().authenticated()
         )
 
-            // dodaj moj JWT filter PRIJE Spring Security defaultnog filtera
-            // tako Spring Security koristi moj token umjesto defaultne forme za prijavu
             .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
-        return http.build();  // gotov sam sa konfiguracijom, izgradi security chain
+        return http.build();  
     }
 
     @Bean
@@ -81,7 +73,7 @@ public class SecurityConfig {
         config.setAllowedOriginPatterns(List.of("*")); // dopusti sve origine
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
-        config.setAllowCredentials(false); // promijeni na false
+        config.setAllowCredentials(false); 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
         return source;

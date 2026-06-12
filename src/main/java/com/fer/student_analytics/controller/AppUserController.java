@@ -44,21 +44,21 @@ public class AppUserController {
         return ResponseEntity.notFound().build(); // 404 ako ne postoji
     }
 
-    // POST /api/users - kreiraj novog korisnika
+    // POST /api/users,kreiraj novog korisnika
     @PostMapping
     public ResponseEntity<UserResponseDto> createUser(@RequestBody SystemUser user) {
         SystemUser created = appUserService.createUser(user);
         return ResponseEntity.status(HttpStatus.CREATED).body(new UserResponseDto(created)); // 201 Created
     }
 
-    // PUT /api/users/{id} - azuriraj korisnika
+    // PUT /api/users/{id}, azuriraj korisnika
     @PutMapping("/{id}")
     public ResponseEntity<UserResponseDto> updateUser(@PathVariable UUID id, @RequestBody SystemUser user) {
         SystemUser updated = appUserService.updateUser(id, user);
         return ResponseEntity.ok(new UserResponseDto(updated)); // 200 OK, mogao sam i sa status body pisat ovo
     }
 
-    // DELETE /api/users/{id} - obrisi korisnika
+    // DELETE /api/users/{id}, obrisi korisnika
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteUser(@PathVariable UUID id) {
         appUserService.deleteUser(id);

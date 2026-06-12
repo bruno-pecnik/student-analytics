@@ -7,7 +7,6 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Repository 
-// we inherit all the methods from JpaRepositoryja. SystemUser = table I am working with, UUID = primary key type
 public interface AppUserRepository extends JpaRepository<SystemUser, UUID> {
-    Optional<SystemUser> findByEmail(String email); // my custom method
+    Optional<SystemUser> findByEmail(String email); // moja custom metoda
 }

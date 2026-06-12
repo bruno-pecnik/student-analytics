@@ -8,18 +8,18 @@ import org.springframework.stereotype.Component;
 import java.security.Key;
 import java.util.Date;
 
-import lombok.extern.slf4j.Slf4j; // lombok za ispis log.warn
+import lombok.extern.slf4j.Slf4j; 
 
 @Slf4j // lombok za ispis log.warn
 
-@Component // // Spring kreira instancu i omogućuje injection (ne trebamo stalno kreirati ovu klasu sa "new")
+@Component // 
 public class JwtUtil {
 
-    @Value("${jwt.secret}") // čita tajni ključ iz application.properties
-    private String secret; // u secret ide vrijednost iz jwt.secret
+    @Value("${jwt.secret}") 
+    private String secret; 
 
-    @Value("${jwt.expiration}") // čita trajanje tokena iz application.properties (86400000ms = 24h)
-    private long expiration; // u expiration ide vrijednost iz jwt.expiration
+    @Value("${jwt.expiration}") 
+    private long expiration; 
 
     // generira JWT token za korisnika
     public String generateToken(String email, String role) {
@@ -27,7 +27,7 @@ public class JwtUtil {
             .subject(email) // email je glavni identifikator korisnika u tokenu
             .claim("role", role) // dodajemo ulogu u token da znamo je li student/profesor/admin
             .issuedAt(new Date()) // kada je token izdan
-            .expiration(new Date(System.currentTimeMillis() + expiration)) // kada token ističe, (trenutno vrijeme u milisekundama od 1970.)
+            .expiration(new Date(System.currentTimeMillis() + expiration)) 
             .signWith(getSigningKey()) // potpisujemo token tajnim ključem
             .compact(); // pretvaramo u string
     }
@@ -53,7 +53,6 @@ public class JwtUtil {
         }
     }
 
-    // privatna metoda koja parsira token i vraća sve podatke (claims) iz njega
     private Claims extractClaims(String token) { // private jer samo JwtUtil može koristit ovu metodu
         return Jwts.parser()
             .verifyWith((javax.crypto.SecretKey) getSigningKey()) // verificiramo potpis

@@ -14,11 +14,11 @@ public class StudentRecord {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @ManyToOne // multiple records for one enrollment. the same student has multiple records
+    @ManyToOne // više zapisa (student_record) za jedan enrollment. isti student ima više zapisa 
     @JoinColumn(name = "enrollment_id", nullable = false)
     private StudentEnrollment enrollment;
 
-    @ManyToOne  //*** multiple records for one component. multiple students have the same test
+    @ManyToOne  // više zapisa za jednu komponentu. više studenata imat isti test
     @JoinColumn(name = "component_id", nullable = false)
     private GradeComponent component;
 

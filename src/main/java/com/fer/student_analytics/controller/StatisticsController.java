@@ -47,7 +47,7 @@ public class StatisticsController { // ovdje nemam CRUD-a i ne vraćam entitete 
         return ResponseEntity.ok(statisticsService.canStudentAccessExam(enrollmentId)); // 200 OK
     }
 
-    // GET /api/statistics/course/{courseId}/average - prosjek bodova za kolegij
+    // GET /api/statistics/course/{courseId}/average,prosjek bodova za kolegij
     @GetMapping("/course/{courseId}/average")
     public ResponseEntity<Double> getCourseAverage(@PathVariable UUID courseId) {
         return ResponseEntity.ok(statisticsService.getAveragePointsForCourse(courseId));

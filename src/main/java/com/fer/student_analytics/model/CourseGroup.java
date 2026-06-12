@@ -13,7 +13,7 @@ public class CourseGroup {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @ManyToOne // multiple groups belong to one course, but one group belongs to exactly one course
+    @ManyToOne // kolegij ima više grupa, ali jedna grupa ima samo jedan kolegij
     @JoinColumn(name = "course_id", nullable = false)
     private Course course;
 

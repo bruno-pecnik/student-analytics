@@ -13,7 +13,7 @@ public class GradeComponent {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @ManyToOne // one course has multiple components, but one component has only one course
+    @ManyToOne // jedan kolegij ima više komponenta, ali jedna komponenta ima samo jedan kolegij
     @JoinColumn(name = "course_id", nullable = false)
     private Course course;
 

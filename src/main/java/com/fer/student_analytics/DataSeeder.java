@@ -122,7 +122,6 @@ public class DataSeeder implements CommandLineRunner {
             Course.Semester.SUMMER, Course.Semester.SUMMER
         };
 
-        // bodovi rastu kroz godine za vidljiv trend
         float[] faktorPoGodini = {
             0.60f, 0.63f, 0.66f, 0.69f, 0.72f,
             0.75f, 0.78f, 0.81f, 0.84f, 0.88f
@@ -164,15 +163,12 @@ public class DataSeeder implements CommandLineRunner {
                 kolegij.setAcademicYear(godina);
                 courseRepository.save(kolegij);
 
-                // grade rules
                 kreirajGradeRules(kolegij);
 
-                // komponente
                 GradeComponent kolokvij = kreirajKomponentu("Kolokvij 1", 30.0f, 15.0f, 30.0f, true, kolegij);
                 GradeComponent ispit = kreirajKomponentu("Završni ispit", 50.0f, 25.0f, 50.0f, true, kolegij);
                 GradeComponent zadace = kreirajKomponentu("Zadaće", 20.0f, 10.0f, 20.0f, false, kolegij);
 
-                // grupe
                 CourseGroup grupaA = kreirajGrupu("Grupa A", kolegij);
                 CourseGroup grupaB = kreirajGrupu("Grupa B", kolegij);
 

@@ -46,36 +46,29 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             return;
         }
 
-        // makni "Bearer " prefiks, tj. izvuci token
         String token = extractToken(authHeader);
 
-        // provjeri je li token validan / nije istekao
         if (!jwtUtil.isTokenValid(token)) {
             log.warn("Nevalidan JWT token za zahtjev: {}", request.getRequestURI());
             filterChain.doFilter(request, response);
             return;
         }
 
-        // izvuci email i ulogu iz tokena
         String email = jwtUtil.extractEmail(token);
         String role = jwtUtil.extractRole(token);
 
-        // provjeri postoji li korisnik još uvijek u bazi
         if (!userExists(email)) {
             log.warn("Korisnik iz tokena ne postoji u bazi: {}", email);
             filterChain.doFilter(request, response); // ako korisnik ne postoji, pustim request dalje, ali bez autentifikacije, npr. za login
             return;
         }
 
-        // kreiraj Spring Security autentikaciju
         UsernamePasswordAuthenticationToken authentication = createAuthentication(email, role);
 
-        // postavi autentikaciju u Spring Security context
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
         log.info("Autentificiran korisnik: {}, s ulogom: {}", email, role);
 
-        // nastavi s obradom zahtjeva prema Controlleru, tj. prosljeđuje request sljedećem filtru
         filterChain.doFilter(request, response);
     }
 

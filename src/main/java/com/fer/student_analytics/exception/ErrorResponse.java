@@ -5,7 +5,7 @@ import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-@Getter // umjestp da samo pišemo getter metode i konstruktor, koristimo lombok
+@Getter // umjestp da sam pišemo getter metode i konstruktor, koristim lombok
 @AllArgsConstructor
 public class ErrorResponse {
     private int status;

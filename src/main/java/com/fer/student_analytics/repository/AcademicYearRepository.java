@@ -5,6 +5,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import java.util.UUID;
 
-@Repository // tells spring this is repository class
+@Repository 
 public interface AcademicYearRepository extends JpaRepository<AcademicYear, UUID> {
 }

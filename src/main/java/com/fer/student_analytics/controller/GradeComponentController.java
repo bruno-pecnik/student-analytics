@@ -27,13 +27,13 @@ public class GradeComponentController {
         return ResponseEntity.ok(gradeComponentService.getAllComponents()); // 200 OK
     }
 
-    // GET /api/grade-components/by-course/{courseId} - dohvati komponente po kolegiju
+    // GET /api/grade-components/by-course/{courseId}, dohvati komponente po kolegiju
     @GetMapping("/by-course/{courseId}")
     public ResponseEntity<List<GradeComponent>> getComponentsByCourse(@PathVariable UUID courseId) {
         return ResponseEntity.ok(gradeComponentService.getComponentsByCourse(courseId)); // 200 OK
     }
 
-    // GET /api/grade-components/{id} - dohvati komponentu po ID-u
+    // GET /api/grade-components/{id},dohvati komponentu po ID-u
     @GetMapping("/{id}")
     public ResponseEntity<GradeComponent> getComponentById(@PathVariable UUID id) {
         Optional<GradeComponent> component = gradeComponentService.getComponentById(id);

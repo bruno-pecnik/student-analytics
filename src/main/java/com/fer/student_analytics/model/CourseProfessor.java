@@ -13,7 +13,7 @@ public class CourseProfessor {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @ManyToOne // this means we have same course_ID in multiple rows in the table
+    @ManyToOne // znači da imamo isti course_ID u više redova tablice
     @JoinColumn(name = "course_id", nullable = false)
     private Course course;
 

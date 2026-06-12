@@ -26,13 +26,13 @@ public class GradeRuleController {
         return ResponseEntity.ok(gradeRuleService.getAllGradeRules()); // 200 OK
     }
 
-    // GET /api/grade-rules/by-course/{courseId} - dohvati pravila po kolegiju
+    // GET /api/grade-rules/by-course/{courseId}, dohvati pravila po kolegiju
     @GetMapping("/by-course/{courseId}")
     public ResponseEntity<List<GradeRule>> getGradeRulesByCourse(@PathVariable UUID courseId) {
         return ResponseEntity.ok(gradeRuleService.getGradeRulesByCourse(courseId)); // 200 OK
     }
 
-    // GET /api/grade-rules/{id} - dohvati pravilo po ID-u
+    // GET /api/grade-rules/{id}, dohvati pravilo po ID-u
     @GetMapping("/{id}")
     public ResponseEntity<GradeRule> getGradeRuleById(@PathVariable UUID id) {
         Optional<GradeRule> gradeRule = gradeRuleService.getGradeRuleById(id);
@@ -42,14 +42,14 @@ public class GradeRuleController {
         return ResponseEntity.notFound().build(); // 404 ako ne postoji
     }
 
-    // POST /api/grade-rules - kreiraj novo pravilo
+    // POST /api/grade-rules, kreiraj novo pravilo
     @PostMapping
     public ResponseEntity<GradeRule> createGradeRule(@RequestBody GradeRule gradeRule) {
         GradeRule created = gradeRuleService.createGradeRule(gradeRule);
         return ResponseEntity.status(HttpStatus.CREATED).body(created); // 201 Created
     }
 
-    // PUT /api/grade-rules/{id} - ažuriraj pravilo
+    // PUT /api/grade-rules/{id},ažuriraj pravilo
     @PutMapping("/{id}")
     public ResponseEntity<GradeRule> updateGradeRule(@PathVariable UUID id, @RequestBody GradeRule gradeRule) {
         GradeRule updated = gradeRuleService.updateGradeRule(id, gradeRule);
